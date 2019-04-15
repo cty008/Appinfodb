@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        ">
+
+    <!-- 配置事务管理器 -->
+    <bean id="txManager"
+          class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <!-- 配置事务的传播特性 -->
+    <tx:advice id="txAdvice" transaction-manager="txManager">
+        <tx:attributes>
+            <!--read-only="true  只读-->
+            <!--<tx:method name="login*" read-only="true" />-->
+
+            <!--name="sava*"  代表方法sava开头的都会使用事务-->
+            <!--propagation="REQUIRED"  REQUIRED:默认值 如果无事务则开启，如果有事务则支持-->
+            <tx:method name="doDetai3" propagation="REQUIRED"/>
+            <tx:method name="doDetail234" propagation="REQUIRED"/>
+            <tx:method name="DelDetail" propagation="REQUIRED"/>
+            <tx:method name="update" propagation="REQUIRED"/>
+            <tx:method name="sub" propagation="REQUIRED"/>
+            <tx:method name="delete" propagation="REQUIRED"/>
+            <tx:method name="saveService" propagation="REQUIRED"/>
+            <tx:method name="*" propagation="REQUIRED" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!-- 配置哪些类哪些方法使用事务 -->
+    <aop:config>
+        <!--定义切入点-->
+        <aop:pointcut id="serviceMethod" expression="execution(* service.*.*(..))"   />
+        <!--将事务通知与切入点组合-->
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="serviceMethod"/>
+    </aop:config>
+
+    <!-- 加载Hibernate配置,创建Hibernate SessionFactory -->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+        <property name="configLocation">
+            <value>classpath:hibernate.cfg.xml</value>
+        </property>
+    </bean>
+
+    <!-- SysEmployeeDao sysEmployeeDaoT223=new SysEmployeeDaoImpl() -->
+    <bean id="sysEmployeeDaoT223" class="dao.impl.SysEmployeeDaoImpl">
+        <!--1、name="sessionFactory"是因为dao层的实现继承了HibernateDaoSupport;而这个类中有setSessionFactory()方法,所以必须要配置这个名字。
+        2、ref="sessionFactoryT223"是引用bean标签中属性id的值； 一般不推荐改动名字,但是实际上可以更改-->
+        <property name="sessionFactory" ref="sessionFactory"></property>
+    </bean>
+
+    <!-- SysEmployeeService sysEmployeeService=new SysEmployeeServiceImpl -->
+    <bean id="sysEmployeeService" class="service.impl.SysEmployeeServiceImpl">
+        <!-- name="sysEmployeeDao" 对应的是SysEmployeeServiceImpl类中的setSysEmployeeDao()方法-->
+        <property name="sysEmployeeDao" ref="sysEmployeeDaoT223"></property>
+    </bean>
+
+    <!-- BizClaimVoucherDao bizClaimVoucherDao=new BizClaimVoucherDaoImpl() -->
+    <bean id="bizClaimVoucherDaoT223" class="dao.impl.BizClaimVoucherDaoImpl">
+        <property name="sessionFactory" ref="sessionFactory"></property>
+    </bean>
+
+    <!-- BizClaimVoucherService bizClaimVoucherService=new BizClaimVoucherServiceImpl -->
+    <bean id="bizClaimVoucherService" class="service.impl.BizClaimVoucherServiceImpl">
+        <property name="bizClaimVoucherDao" ref="bizClaimVoucherDaoT223"></property>
+    </bean>
+
+
+
+
+
+</beans>

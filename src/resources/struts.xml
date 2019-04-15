@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+
+    <!--引用用户模块控制-->
+    <include file="struts-*.xml"/>
+
+    <!--设置为true, 代表启动动态方法的调用-->
+    <constant name="struts.enable.DynamicMethodInvocation" value="true"/>
+
+    <!--设置用户界面主题, 默认值为XHTML风格-->
+    <constant name="struts.ui.theme" value="simple"/>
+
+    <!--创建一个default包,继承自Struts2的 struts2的struts-default包-->
+    <package name="default" namespace="/" extends="struts-default">
+        <!--全局结果-->
+        <global-results>
+            <result name="login">/login.jsp</result>
+        </global-results>
+
+    </package>
+
+
+
+</struts>

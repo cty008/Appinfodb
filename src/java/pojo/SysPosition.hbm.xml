@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="pojo.SysPosition" table="SYS_POSITION" schema="T223" >
+        <id name="id" column="ID"/>
+        <property name="nameCn" column="NAME_CN"/>
+        <property name="nameEn" column="NAME_EN"/>
+        <set name="sysEmployeesById" inverse="true">
+            <key>
+                <column name="POSITION_ID"/>
+            </key>
+            <one-to-many not-found="ignore" class="pojo.SysEmployee"/>
+        </set>
+    </class>
+</hibernate-mapping>
