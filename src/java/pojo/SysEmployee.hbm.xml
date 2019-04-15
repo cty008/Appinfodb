@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="pojo.SysEmployee" table="SYS_EMPLOYEE" schema="T223">
+        <id name="sn" column="SN"/>
+        <property name="name" column="NAME"/>
+        <property name="password" column="PASSWORD"/>
+        <property name="status" column="STATUS"/>
+        <many-to-one name="sysPositionByPositionId" class="pojo.SysPosition" lazy="false">
+            <column name="POSITION_ID"/>
+        </many-to-one>
+        <many-to-one name="sysDepartmentByDepartmentId" class="pojo.SysDepartment" lazy="false">
+            <column name="DEPARTMENT_ID"/>
+        </many-to-one>
+        <set name="bizCheckResultsBySn" inverse="true">
+            <key>
+                <column name="CHECKER_SN"/>
+            </key>
+            <one-to-many not-found="ignore" class="pojo.BizCheckResult"/>
+        </set>
+        <set name="bizClaimVouchersBySn" inverse="true">
+            <key>
+                <column name="NEXT_DEAL_SN"/>
+            </key>
+            <one-to-many not-found="ignore" class="pojo.BizClaimVoucher"/>
+        </set>
+        <set name="bizClaimVouchersBySn_0" inverse="true">
+            <key>
+                <column name="CREATE_SN"/>
+            </key>
+            <one-to-many not-found="ignore" class="pojo.BizClaimVoucher"/>
+        </set>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="pojo.BizCheckResult" table="BIZ_CHECK_RESULT" schema="T223">
+        <id name="id" column="ID">
+            <generator class="increment"/>
+        </id>
+        <property name="checkTime" column="CHECK_TIME"/>
+        <property name="result" column="RESULT"/>
+        <property name="comm" column="COMM"/>
+        <many-to-one name="bizClaimVoucherByClaimId" class="pojo.BizClaimVoucher" lazy="false">
+            <column name="CLAIM_ID"/>
+        </many-to-one>
+        <many-to-one name="sysEmployeeByCheckerSn" class="pojo.SysEmployee" lazy="false">
+            <column name="CHECKER_SN"/>
+        </many-to-one>
+    </class>
+</hibernate-mapping>

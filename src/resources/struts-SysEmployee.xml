@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+
+    <package name="sysEmployee" namespace="/" extends="default">
+        <!-- 拦截器 -->
+        <interceptors>
+            <interceptor name="myInterceptor" class="alipayConfig.MyInterceptor"></interceptor>
+            <interceptor-stack name="myInterceptor">
+                <interceptor-ref name="myInterceptor">
+                    <param name="excludeMethods">login</param><!-- 不拦截的方法-->
+                </interceptor-ref>
+                <interceptor-ref name="defaultStack"></interceptor-ref>
+            </interceptor-stack>
+        </interceptors>
+        <!-- 将上述拦截器设定为默认拦截器 ,这样在后续同一个package内部的所有Action执行之前都会被login拦截。-->
+        <default-interceptor-ref name="myInterceptor" />
+
+
+        <!--登录-->
+        <action name="*SysEmployeeAction" class="action.SysEmployeeAction" method="{1}">
+            <result name="loginSuccess" type="redirectAction">query</result>
+        </action>
+
+        <!--退出-->
+        <action name="emp_logout" class="action.SysEmployeeAction" method="logout">
+            <result name="login">/login.jsp</result>
+        </action>
+
+    </package>
+
+</struts>

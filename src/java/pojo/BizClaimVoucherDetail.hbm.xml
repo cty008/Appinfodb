@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="pojo.BizClaimVoucherDetail" table="BIZ_CLAIM_VOUCHER_DETAIL" schema="T223">
+        <id name="id" column="ID">
+            <generator class="increment"/>
+        </id>
+        <property name="item" column="ITEM"/>
+        <property name="account" column="ACCOUNT"/>
+        <property name="des" column="DES"/>
+        <many-to-one name="bizClaimVoucherByMainId" class="pojo.BizClaimVoucher" lazy="false" >
+            <column name="MAIN_ID"/>
+        </many-to-one>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+
+    <package name="BizClaimVoucher" namespace="/" extends="default">
+
+        <!--登录之后默认显示列表信息-->
+        <action name="query" class="action.BizClaimVoucherAction">
+            <result name="success">/list.jsp</result>
+        </action>
+
+        <!--按条件查询信息并显示到列表-->
+        <action name="claim_listBySelf" class="action.BizClaimVoucherAction" method="List">
+            <result name="success">/list.jsp</result>
+            <result name="query" type="redirectAction">query</result>
+        </action>
+
+        <!--添加报销单-->
+        <action name="claim_add" class="action.BizClaimVoucherAction" method="add">
+            <result name="success" type="redirect">query</result> <!--重定向到列表信息-->
+        </action>
+
+        <!--查看报销单-->
+        <action name="claim_find" class="action.BizClaimVoucherAction" method="find">
+            <result name="success">/info.jsp</result>
+            <result name="error" type="redirect">query</result>
+        </action>
+
+        <!--删除报销单-->
+        <action name="claim_delete" class="action.BizClaimVoucherAction" method="delete">
+            <result name="success" type="redirect">query</result>
+        </action>
+
+        <!--提交报销单-->
+        <action name="claim_sub" class="action.BizClaimVoucherAction" method="sub">
+            <result name="success" type="redirect">query</result>
+        </action>
+
+        <!--查询信息并跳转到修改页面-->
+        <action name="claim_update" class="action.BizClaimVoucherAction" method="update">
+            <result name="success">/update.jsp</result>
+            <result name="error" type="redirect">query</result>
+        </action>
+
+        <!--修改报销单-->
+        <action name="claim_doupdate" class="action.BizClaimVoucherAction" method="updateInfo">
+            <result name="success" type="redirect">query</result>
+        </action>
+
+        <!--部门经理、总经理、财务、 跳转到审批页面-->
+        <action name="claim_detail" class="action.BizClaimVoucherAction" method="detail">
+            <result name="success">/detail.jsp</result>
+        </action>
+
+        <!--部门经理审批-->
+        <action name="claim_doDetail2" class="action.BizClaimVoucherAction" method="doDetail2">
+            <result name="success" type="redirect">query</result>
+        </action>
+
+        <!--总经理审批-->
+        <action name="claim_doDetail3" class="action.BizClaimVoucherAction" method="doDetail3">
+            <result name="success" type="redirect">query</result>
+        </action>
+
+        <!--财务审批-->
+        <action name="claim_doDetail4" class="action.BizClaimVoucherAction" method="doDetail4">
+            <!--<result name="success" type="redirect">query</result>-->
+        </action>
+
+    </package>
+</struts>

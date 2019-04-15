@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+    "-//Hibernate/Hibernate Configuration DTD//EN"
+    "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+  <session-factory>
+    <!--数据库URL-->
+    <property name="connection.url">jdbc:oracle:thin:@localhost:1521:T223SID</property>
+    <!--数据库用户-->
+    <property name="connection.username">T223</property>
+    <!--数据库用户密码-->
+    <property name="connection.password">T223</property>
+    <!--数据库JDBC驱动-->
+    <property name="connection.driver_class">oracle.jdbc.driver.OracleDriver</property>
+    <!--方言  理解为：生成什么数据库的SQL-->
+    <property name="dialect">org.hibernate.dialect.Oracle10gDialect</property>
+    <!--运行SQL日志以供调试-->
+    <property name="show_sql">true</property>
+
+    <!--在控制台输出格式化的SQL语句-->
+     <!--<property name="format_sql">true</property>-->
+
+    <!--引入映射文件-->
+    <mapping resource="pojo/BizCheckResult.hbm.xml"></mapping>
+    <mapping resource="pojo/BizClaimVoucher.hbm.xml"></mapping>
+    <mapping resource="pojo/BizClaimVoucherDetail.hbm.xml"></mapping>
+    <mapping resource="pojo/SysDepartment.hbm.xml"></mapping>
+    <mapping resource="pojo/SysEmployee.hbm.xml"></mapping>
+    <mapping resource="pojo/SysPosition.hbm.xml"></mapping>
+
+  </session-factory>
+</hibernate-configuration>
