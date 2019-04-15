@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace=""  命名空间，防止所有的包名不能重复值的规则：接口的完全包名.接口名 -->
+<mapper namespace="dao.developer.DeveloperDao">
+	
+	<!-- 登陆 -->
+	<select id="Logindev" resultType="DevUser" parameterType="String">
+		 select * from dev_user
+		 where devCode=#{0} and devPassword=#{1}
+	</select>
+	
+	<!--根据条件查询列表  -->
+	<select id="appInfolist" resultType="AppInfo" parameterType="AppInfo">
+	select 
+	a.id,a.softwareName,a.APKName,a.softwareSize,a.devId,a.`status`,a.downloads,a.supportROM,a.downloads,a.onSaleDate,a.versionId,
+	(select valueName from data_dictionary where a.flatformId=valueId and typeCode='APP_FLATFORM')as flatformName,
+	(select categoryName from app_category where a.categoryLevel1=id) as categoryLevel1Name,
+	(select categoryName from app_category where a.categoryLevel2=id) as categoryLevel2Name,
+	(select categoryName from app_category where a.categoryLevel3=id) as categoryLevel3Name,
+	(select valueName from data_dictionary where a.status=valueId and typeCode='APP_STATUS') as statusName,
+	(select versionNO from app_version where a.versionId=id) as versionNO 
+	from app_info as a
+	<trim prefix="where" prefixOverrides="and | or">
+		<if test="softwareName!=null and softwareName!=''">and a.softwareName like '%' #{softwareName} '%' </if>
+		<if test="status!=null and status!=0"> and a.status=#{status} </if>
+		<if test="flatformId!=null and flatformId!=0"> and a.flatformId=#{flatformId} </if>
+		<if test="categoryLevel1!=null and categoryLevel1!=0"> and a.categoryLevel1=#{categoryLevel1} </if>
+		<if test="categoryLevel2!=null and categoryLevel2!=0"> and a.categoryLevel2=#{categoryLevel2} </if>
+		<if test="categoryLevel3!=null and categoryLevel3!=0"> and a.categoryLevel3=#{categoryLevel3} </if>
+		<if test="devId!=null and devId!=0"> and a.devId=#{devId} </if> 
+	</trim>
+	order by creationDate limit #{currPage},#{pageSize} 
+	</select>
+	
+	<!-- 根据条件查询列表行数 -->
+	<select id="countPage" resultType="int" parameterType="AppInfo">
+		select count(1) as count  from app_info a
+		<trim prefix="where" prefixOverrides="and | or">
+		<if test="softwareName!=null and softwareName!=''">and a.softwareName like '%' #{softwareName} '%' </if>
+		<if test="status!=null and status!=0"> and a.status=#{status} </if>
+		<if test="flatformId!=null and flatformId!=0"> and a.flatformId=#{flatformId} </if>
+		<if test="categoryLevel1!=null and categoryLevel1!=0"> and a.categoryLevel1=#{categoryLevel1} </if>
+		<if test="categoryLevel2!=null and categoryLevel2!=0"> and a.categoryLevel2=#{categoryLevel2} </if>
+		<if test="categoryLevel3!=null and categoryLevel3!=0"> and a.categoryLevel3=#{categoryLevel3} </if>
+		<if test="devId!=null and devId!=0"> and a.devId=#{devId} </if> 
+	</trim>
+	</select>
+	
+	<!--下拉框APP状态  -->
+	<select id="getStatus" resultType="DataDictionary">
+		select * 
+		from data_dictionary 
+		where typeCode='APP_STATUS'
+	</select>
+	
+	<!--下拉框所属平台  -->
+	<select id="getflatformId" resultType="DataDictionary">
+		select * 
+		from data_dictionary 
+		where typeCode='APP_FLATFORM'
+	</select>
+	
+	<!--查询一级分类下拉框  -->
+	<select id="getcategoryLevel1" resultType="AppCategory">
+		select *  
+		from app_category
+		where categoryCode='ALL_APP' or categoryCode='ALL_GAME'
+	</select>
+	
+	<!--根据一级分类查询二级和三级下拉框  -->
+	<select id="getChildrenByParentId" resultType="AppCategory" parameterType="Integer">
+		select * 
+		from app_category
+		where parentId=#{0}
+	</select>
+	
+	<!--新增APP基础信息  -->
+	<insert id="addAppInfo" parameterType="AppInfo">
+		insert into app_info(softwareName,APKName,supportROM,
+		interfaceLanguage,softwareSize,downloads,flatformId,
+		categoryLevel1,categoryLevel2,categoryLevel3,`status`,appInfo,logoPicPath,logoLocPath) 
+		values (#{softwareName},#{APKName},#{supportROM},#{interfaceLanguage},#{softwareSize},#{downloads},
+		#{flatformId},#{categoryLevel1},#{categoryLevel2},#{categoryLevel3},
+		#{status},#{appInfo},#{logoPicPath},#{logoLocPath}) 
+	</insert>
+	
+	<!--新增基础信息页面   查询ajax后台验证   APKName是否已存在  -->
+	<select id="getAPKName" resultType="AppInfo" parameterType="String">
+		select * from app_info
+		where APKName=#{0}
+	</select>
+	
+	<!--修改基础信息  -->
+	<update id="appinfomodify" parameterType="AppInfo">
+		update app_info set softwareName=#{softwareName},APKName=#{APKName},supportROM=#{supportROM},
+		interfaceLanguage=#{interfaceLanguage},softwareSize=#{softwareSize},downloads=#{downloads},
+		flatformId=#{flatformId},categoryLevel1=#{categoryLevel1},categoryLevel2=#{categoryLevel2},
+		categoryLevel3=#{categoryLevel3},`status`=#{status},appInfo=#{appInfo}
+		<if test="logoPicPath!=null"> ,logoPicPath=#{logoPicPath}</if>
+		<if test="logoLocPath!=null"> ,logoLocPath=#{logoLocPath}</if>
+		where id=#{id}
+	</update>
+	
+	<!--查看基础信息  -->
+	<select id="appview" resultType="AppInfo" parameterType="int"> 
+	select   
+	a.*,
+	(select valueName from data_dictionary where a.flatformId=valueId and typeCode='APP_FLATFORM')as flatformName,
+	(select categoryName from app_category where a.categoryLevel1=id) as categoryLevel1Name,
+	(select categoryName from app_category where a.categoryLevel2=id) as categoryLevel2Name,
+	(select categoryName from app_category where a.categoryLevel3=id) as categoryLevel3Name,
+	(select valueName from data_dictionary where a.status=valueId and typeCode='APP_STATUS') as statusName
+	from app_info as a
+	where id=#{0}
+	</select>
+	
+	<!--删除基础信息(ajax异步)  -->
+	<delete id="delapp" parameterType="int">
+		delete from app_info where id=#{0} 
+	</delete>
+	
+	<!--查看历史版本信息  -->
+	<select id="appversioninfo" resultType="AppVersion" parameterType="int">
+		select a.*,
+		(select softwareName from app_info where a.appId=Id) as appName,
+		(select valueName from data_dictionary where a.publishStatus=valueId and typeCode='PUBLISH_STATUS') as publishStatusName
+		from app_version as a
+		where appId=#{0}
+		order by creationDate desc
+	</select>
+
+	<!--根据ID删除LOGO图片  -->
+	<insert id="delfile" parameterType="int">
+		update  app_info set logoPicPath=null,logoLocPath=null
+		where id=#{0}
+	</insert>
+	
+	<!--根据ID修改上下架  -->
+	<insert id="saleSwitchAjax" parameterType="int">
+		update  app_info set status=#{0}
+		where id=#{1}
+	</insert>
+	
+	<!--删除apk文件  -->
+	<update id="delapk"  parameterType="int">
+		update app_version set apkLocPath=null,apkFileName=null,downloadLink=null
+		where id=#{0}
+	</update>
+	
+	<!--新增版本信息  -->
+	<insert id="addversionsave" parameterType="AppVersion">
+		insert into app_version(appId,versionNo,versionSize,publishStatus,
+		versionInfo,downloadLink,apkLocPath,apkFileName,creationDate)
+		values (#{appId},#{versionNo},#{versionSize},#{publishStatus},
+		#{versionInfo},#{downloadLink},#{apkLocPath},#{apkFileName}
+		,#{creationDate})
+	</insert>
+	
+	<!--根据appId查询版本信息  -->
+	<select id="UpVersionInfo" resultType="AppVersion" parameterType="int">
+		select * from app_version
+		where  id=#{0}
+	</select>
+	
+	<!--修改版本信息  -->
+	<update id="appversionmodify" parameterType="AppVersion">
+		update app_version set versionNo=#{versionNo},versionSize=#{versionSize},
+		publishStatus=#{publishStatus},versionInfo=#{versionInfo},modifyDate=#{modifyDate}
+		<if test="downloadLink!=null">,downloadLink=#{downloadLink}</if>
+		where appId=#{appId}
+	</update>
+	
+	<!--往AppInfo表里  增加最新的版本id  -->
+	<update id="addAppInfoVersionId" parameterType="AppInfo">
+		update app_info set versionId=#{versionId}
+		where id=#{id}
+	</update>
+	
+	<!--根据version表appId查询最新id  -->
+	<select id="getIdByAppId" resultType="int" parameterType="int">
+		select MAX(id) from app_version 
+		where appId=#{0}
+	</select>
+</mapper>

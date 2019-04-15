@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace=""  命名空间，防止所有的包名不能重复值的规则：接口的完全包名.接口名 -->
+<mapper namespace="dao.backend.BackendDao">
+	<!-- 后台登陆 -->
+	<select id="LoginBack" resultType="BackendUser" parameterType="String">
+		select a.*, 
+		(select valueName from data_dictionary  where  a.userType=valueId and typeCode='USER_TYPE') as userTypeName
+		from backend_user a
+		 where userCode=#{0} and userPassword=#{1}
+	</select>
+	
+	<!--根据条件查询列表  -->
+	<select id="BackInfo" resultType="AppInfo" parameterType="AppInfo">
+	select 
+	a.id,a.softwareName,a.APKName,a.softwareSize,a.devId,a.`status`,a.downloads,a.supportROM,a.downloads,a.onSaleDate,a.versionId,
+	(select valueName from data_dictionary where a.flatformId=valueId and typeCode='APP_FLATFORM')as flatformName,
+	(select categoryName from app_category where a.categoryLevel1=id) as categoryLevel1Name,
+	(select categoryName from app_category where a.categoryLevel2=id) as categoryLevel2Name,
+	(select categoryName from app_category where a.categoryLevel3=id) as categoryLevel3Name,
+	(select valueName from data_dictionary where a.status=valueId and typeCode='APP_STATUS') as statusName,
+	(select versionNO from app_version where a.versionId=id) as versionNO 
+	from app_info as a
+	<trim prefix="where" prefixOverrides="and | or">
+		a.status=1
+		<if test="softwareName!=null and softwareName!=''">and a.softwareName like '%' #{softwareName} '%' </if>
+		<if test="flatformId!=null and flatformId!=0"> and a.flatformId=#{flatformId} </if>
+		<if test="categoryLevel1!=null and categoryLevel1!=0"> and a.categoryLevel1=#{categoryLevel1} </if>
+		<if test="categoryLevel2!=null and categoryLevel2!=0"> and a.categoryLevel2=#{categoryLevel2} </if>
+		<if test="categoryLevel3!=null and categoryLevel3!=0"> and a.categoryLevel3=#{categoryLevel3} </if>
+	</trim>
+	order by creationDate limit #{currPage},#{pageSize} 
+	</select>
+	
+	<!-- 根据条件查询列表行数 -->
+	<select id="countPage" resultType="int" parameterType="AppInfo">
+		select count(1) as count 
+		from app_info a
+		<trim prefix="where" prefixOverrides="and | or">
+		a.status=1
+		<if test="softwareName!=null and softwareName!=''">and a.softwareName like '%' #{softwareName} '%' </if>
+		<if test="flatformId!=null and flatformId!=0"> and a.flatformId=#{flatformId} </if>
+		<if test="categoryLevel1!=null and categoryLevel1!=0"> and a.categoryLevel1=#{categoryLevel1} </if>
+		<if test="categoryLevel2!=null and categoryLevel2!=0"> and a.categoryLevel2=#{categoryLevel2} </if>
+		<if test="categoryLevel3!=null and categoryLevel3!=0"> and a.categoryLevel3=#{categoryLevel3} </if>
+	</trim>
+	</select>
+	
+	<!--下拉框所属平台  -->
+	<select id="getflatformId" resultType="DataDictionary">
+		select * 
+		from data_dictionary 
+		where typeCode='APP_FLATFORM'
+	</select>
+	
+	<!--查询一级分类下拉框  -->
+	<select id="getcategoryLevel1" resultType="AppCategory">
+		select *  
+		from app_category
+		where categoryCode='ALL_APP' or categoryCode='ALL_GAME'
+	</select>
+	
+	<!--根据一级分类查询二级和三级下拉框  -->
+	<select id="getChildrenByParentId" resultType="AppCategory" parameterType="Integer">
+		select * 
+		from app_category
+		where parentId=#{0}
+	</select>
+	
+	<!--查看基础信息  -->
+	<select id="appview" resultType="AppInfo" parameterType="int"> 
+	select   
+	a.*,
+	(select valueName from data_dictionary where a.flatformId=valueId and typeCode='APP_FLATFORM')as flatformName,
+	(select categoryName from app_category where a.categoryLevel1=id) as categoryLevel1Name,
+	(select categoryName from app_category where a.categoryLevel2=id) as categoryLevel2Name,
+	(select categoryName from app_category where a.categoryLevel3=id) as categoryLevel3Name,
+	(select valueName from data_dictionary where a.status=valueId and typeCode='APP_STATUS') as statusName
+	from app_info as a
+	where id=#{0}
+	</select>
+
+	<!--根据appId查询版本信息  -->
+	<select id="UpVersionInfo" resultType="AppVersion" parameterType="int">
+		select * from app_version
+		where  id=#{0}
+	</select>
+	
+	<!--审核  根据Id修改状态  -->
+	<update id="UpdateInfo" parameterType="int">
+		update app_info set `status`=#{0}
+		where id=#{1}
+	</update>
+		
+</mapper>

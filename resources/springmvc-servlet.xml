@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+		">
+        
+        <!--扫描包下的注解生效  -->
+		<context:component-scan base-package="controller"/>
+		<!--一键式注册方法和相关类  -->
+		<mvc:annotation-driven/>
+		<!-- 完成视图的对应    对转向页面 的路径解析, prefix:前缀  suffix:后缀   -->
+		<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		    <property name="prefix" value="/WEB-INF/jsp/"/> <!--  配置返回页面的路径  -->
+		    <property name="suffix" value=".jsp"/>			
+		</bean>
+        
+        <!--静态资源文件引用  -->
+        <mvc:resources location="/statics/" mapping="/statics/**/"></mvc:resources>
+        
+        <!-- SpringMVC上传文件时，需要配置MultipartResolver处理器；【还自动解决了文本参数可以提交到控制器】 -->
+		<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+			<property name="defaultEncoding" value="UTF-8" />
+		<!-- 指定所上传文件的[总大小]不能超过500KB。注意maxUploadSize属性的限制不是针对单个文件，而是所有文件的容量之和 -->
+			<property name="maxUploadSize" value="500000" />
+		</bean>
+
+		<!--注意：不要和全局异常冲突； SpringMVC在超出上传文件限制时，会抛出org.springframework.web.multipart.MaxUploadSizeExceededException -->  
+	    <!-- 该异常是SpringMVC在检查上传的文件信息时抛出来的，而且此时还没有进入到Controller方法中 -->  
+	    <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">  
+	        <property name="exceptionMappings">  
+	            <props>  
+	              	  <!-- 遇到MaxUploadSizeExceededException异常时，自动跳转到/error_fileupload.jsp页面 -->  
+	                <prop key="org.springframework.web.multipart.MaxUploadSizeExceededException">error_fileupload</prop>  
+	            </props>  
+	        </property>  
+	    </bean>  
+        
+      	<!-- 基于注解的写法 -->
+		<mvc:interceptors>
+		<mvc:interceptor>
+			<!-- <mvc:mapping path="/*" />  拦截所有的请求 -->
+			<mvc:mapping path="/manager/*" />   <!-- 拦截所有manager模块下的请求 -->
+			<mvc:mapping path="/dev/*" /> 
+			<bean class="interceptor.LoginInterceptor"></bean> <!-- 拦截所有springmvc的url！ -->
+		</mvc:interceptor>
+	</mvc:interceptors>
+		
+</beans>
